@@ -1,4 +1,4 @@
-<h1 align="center">twk-ts (allow typescript developers Interacting with Tawakkalna’s Endpoint)</h1>
+<h1 align="center">tawakkalna-api (allow typescript developers Interacting with Tawakkalna’s Endpoint)</h1>
 
 ## Features
 
