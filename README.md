@@ -16,7 +16,7 @@ npm install tawakkalna-api
 ## Quickstart
 
 ```ts
-import TawakkalnaApi from "twk-ts";
+import TawakkalnaApi from "tawakkalna-api";
 let result: Record<string, any> = {};
 TawakkalnaApi.requestUserFullName()
   .requestUserBloodType()
