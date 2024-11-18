@@ -1,0 +1,39 @@
+{
+  "name": "tawakkalna-api",
+  "version": "0.0.1",
+  "description": "npm package that facilitate calls to TWK APIs and wrap the additional security configurations",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "homepage": "https://github.com/Cyber00v/tawakkalna-api",
+  "Repository": "https://github.com/Cyber00v/tawakkalna-api",
+  "scripts": {
+    "build": "tsup ./src",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "Tawakkalna",
+    "embedded",
+    "embedded-services",
+    "twk-api",
+    "mini-app",
+    "mini-services"
+  ],
+  "files": [
+    "dist",
+    "package.json"
+  ],
+  "exports": {
+    ".": {
+      "require": "./dist/index.js",
+      "import": "./dist/index.mjs",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "author": "Muhammad Hellal Alharbi",
+  "license": "ISC",
+  "devDependencies": {
+    "tsup": "^8.3.5",
+    "typescript": "^5.6.3"
+  }
+}
