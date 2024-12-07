@@ -1,4 +1,5 @@
-<h1 align="center">tawakkalna-api (allow typescript developers Interacting with Tawakkalna’s Endpoint)</h1>
+
+<h1 align="center">twk-ts (allow typescript developers Interacting with Tawakkalna’s Endpoint)</h1>
 
 ## Features
 
@@ -16,18 +17,31 @@ npm install tawakkalna-api
 
 ## Quickstart
 
-```js
-import twa from "tawakkalna-api";
-twk
-  .requestUserId() //Fetches the user's ID.
-  .requestUserFullName() //Fetches the user's full name.
-  .requestUserMobileNumber() //Fetches the user's mobile number.
-  .requestGenerateToken() //Fetches a token for authentication purposes.
-  .sendAll() //execute all queued requests concurrently.
-  .then((user) => user) //handles the successful response after extracted the user information from the returned data.
-  .catch((e) => {
-    throw new Error(e);
-  });
+```ts
+import TawakkalnaApi from "twk-ts";
+let result: Record<string, any> = {};
+TawakkalnaApi.requestUserFullName()
+  .requestUserBloodType()
+  .sendAll()
+  .then((values) => {
+    for (const value of values) {
+      if ("data" in value) {
+        const json = JSON.parse(value.data as string);
+
+        if (Array.isArray(json)) {
+          //handle gallery image or video
+          Object.assign(result, json[0]);
+        } else if (json.mime_type)
+          //handle raw data
+          console.log(json.data);
+        else {
+          Object.assign(result, json); //handle user full name, blood type,...etc
+        }
+      }
+    }
+    console.log(result); //{full_name:"الإسم الكامل","blood_type:":1}
+  })
+  .catch((error) => alert(error));
 ```
 
 ## Here's a breakdown
