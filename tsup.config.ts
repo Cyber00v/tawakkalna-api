@@ -5,5 +5,6 @@ export default defineConfig({
   splitting: false,
   sourcemap: false,
   clean: true,
+  bundle: true,
   dts: true,
 });

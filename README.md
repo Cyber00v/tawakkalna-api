@@ -1,10 +1,11 @@
-<h1 align="center">twk-ts (allow typescript developers Interacting with Tawakkalna’s Endpoint)</h1>
+<h1 align="center">tawakkalna-api (allow typescript developers Interacting with Tawakkalna’s Endpoint)</h1>
 
 ## Features
 
 - Simplicity
 - Chained method
 - Zero dependencies
+- Parallel Execution
 - Tiny size
 
 ## Installation
@@ -15,31 +16,18 @@ npm install tawakkalna-api
 
 ## Quickstart
 
-```ts
-import TawakkalnaApi from "twk-ts";
-let result: Record<string, any> = {};
-TawakkalnaApi.requestUserFullName()
-  .requestUserBloodType()
-  .sendAll()
-  .then((values) => {
-    for (const value of values) {
-      if ("data" in value) {
-        const json = JSON.parse(value.data as string);
-
-        if (Array.isArray(json)) {
-          //handle gallery image or video
-          Object.assign(result, json[0]);
-        } else if (json.mime_type)
-          //handle raw data
-          console.log(json.data);
-        else {
-          Object.assign(result, json); //handle user full name, blood type,...etc
-        }
-      }
-    }
-    console.log(result); //{full_name:"الإسم الكامل","blood_type:":1}
-  })
-  .catch((error) => alert(error));
+```js
+import twa from "tawakkalna-api";
+twk
+  .requestUserId() //Fetches the user's ID.
+  .requestUserFullName() //Fetches the user's full name.
+  .requestUserMobileNumber() //Fetches the user's mobile number.
+  .requestGenerateToken() //Fetches a token for authentication purposes.
+  .sendAll() //execute all queued requests concurrently.
+  .then((user) => user) //handles the successful response after extracted the user information from the returned data.
+  .catch((e) => {
+    throw new Error(e);
+  });
 ```
 
 ## Here's a breakdown
@@ -48,18 +36,43 @@ TawakkalnaApi.requestUserFullName()
 
 The `TawakkalnaApi` is a wrapper around an HTTP client, providing a chainable methods to make API calls (requests) and handle responses.
 
+#### It provides methods to
+
+- Fetch user information ( full name, mobile number, health status, etc.)
+- Manage gallery operations (request file, request image or mulitple images,etc.)
+- Perform actions: Trigger actions like opening screens, sharing screens, and posting cards.
+- Request permissions: Obtain user permissions for location, camera, gallery, and notifications.
+
 ### Request Chaining
 
-`requestUserFullName()` and `requestUserBloodType()` are chained methods for adding Tawakkalna’s endpoints to pending requests list.
+`requestUserFullName()` and `requestUserMobileNumber()` are chained methods for adding Tawakkalna’s endpoints (`user_data/full_name` and `user_data/mobile_number`) to queue requests to requests and process them in parallel.
 
 ### Sending Requests
 
-`sendAll()` Triggers all pending requests sequentially
+`sendAll()` execute all queued requests concurrently.
 
 ### Handling Responses
 
-- The `then` block is executed after all requests are completed.
-- `for (const value of values)` It iterates over the array of responses `values`.
+- The `then` block is executed after all requests are completed and all the response are parsed and resolved to tawakkalna entity.
 
-**Remark**
-Each response object contains a data property if the request was successful.
+### Examples
+
+```js
+const gallery = await twa
+  .requestGallerySingle()
+  .requestCameraPhoto()
+  .requestGallerySingleVideo()
+  .requestFileId()
+  .sendAll();
+
+console.log(gallery.images.length);
+```
+
+```js
+const rawData = await twa
+  .requestRawData(gallery.images)
+  .requestRawData(gallery.videos)
+  .sendAll();
+
+console.log(rawData.files.length);
+```

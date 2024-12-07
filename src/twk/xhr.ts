@@ -1,47 +1,51 @@
-import type { HttpMethod, HttpResponse } from "./types";
+import type { HttpMethod, HttpResponseReturnType } from "./types";
 import { Error, OK } from "./helpers";
-import { Fetcher } from "./HttpClient";
+import { Fetcher } from "./http-client";
 import formatHeaders from "./utils/format-header";
-
+import isRequestBody from "./guard/is-request-body";
 export class xhr implements Fetcher {
   constructor() {}
   public async fetch(
     url: string,
     method: HttpMethod,
     headers: Record<string, string>,
-    parameters: Record<string, any>
-  ): Promise<HttpResponse> {
+    parameters: Record<string, any> | XMLHttpRequestBodyInit
+  ): Promise<HttpResponseReturnType> {
     const instance = new XMLHttpRequest();
+
     return new Promise((resolve, reject) => {
-      instance.ontimeout = () => {
+      instance.ontimeout = function () {
         reject(Error("timeout"));
       };
 
-      instance.onreadystatechange = () => {
-        if (instance.readyState === XMLHttpRequest.DONE) {
-          resolve(this.getHttpResponse(instance));
+      instance.onreadystatechange = function () {
+        if (this.readyState === XMLHttpRequest.DONE) {
+          resolve(xhr.getHttpResponse(instance));
         }
       };
 
-      //"arraybuffer" | "blob" | "document" | "json" | "text";
       instance.responseType = "arraybuffer";
-      instance.open(method, url);
+      instance.open(method, url, true);
 
       formatHeaders(headers).forEach((header) =>
         instance.setRequestHeader(header.name, header.value)
       );
-      if (method != "GET") instance.send(JSON.stringify(parameters));
+
+      if (method !== "GET")
+        if (isRequestBody(parameters)) instance.send(parameters);
+        else instance.send(JSON.stringify(parameters));
       else instance.send();
     });
   }
 
-  private getHttpResponse = (httpRequest: XMLHttpRequest): HttpResponse => {
+  private static getHttpResponse = (
+    httpRequest: XMLHttpRequest
+  ): HttpResponseReturnType => {
     if (httpRequest.readyState != XMLHttpRequest.DONE)
       return Error(
         "The HTTP request must complete before a response can be received"
       );
 
-    //add type guard here
     const buffer = httpRequest.response as ArrayBuffer;
 
     if (httpRequest.status === 200) return OK(buffer);

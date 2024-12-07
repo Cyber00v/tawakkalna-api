@@ -1,8 +1,8 @@
-import { HttpResponse, JsonString } from "../types";
+import { HttpResponseReturnType, JsonString } from "../types";
 
 export const OK = (
   data: JsonString | Blob | Document | object | ArrayBuffer
-): HttpResponse => {
+): HttpResponseReturnType => {
   return {
     data,
   };

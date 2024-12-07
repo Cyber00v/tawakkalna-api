@@ -1,4 +1,4 @@
-import { HttpMethod, HttpResponse } from "./types";
+import { HttpMethod, HttpResponseReturnType } from "./types";
 import generateSignHeader from "./utils/generate-signed-header";
 import isEmptyObject from "./utils/is-empty-object";
 
@@ -13,7 +13,7 @@ export interface Fetcher {
     method: HttpMethod,
     headers: Record<string, string>,
     parameters: Record<string, any>
-  ) => Promise<HttpResponse>;
+  ) => Promise<HttpResponseReturnType>;
 }
 
 export class HttpClient {
@@ -28,28 +28,28 @@ export class HttpClient {
   public async get(
     path: string,
     parameters: Record<string, any>
-  ): Promise<HttpResponse> {
+  ): Promise<HttpResponseReturnType> {
     return this.execute(path, "GET", parameters);
   }
 
   public async post(
     path: string,
     parameters: Record<string, any>
-  ): Promise<HttpResponse> {
+  ): Promise<HttpResponseReturnType> {
     return this.execute(path, "POST", parameters);
   }
 
   public async delete(
     path: string,
     parameters: Record<string, any>
-  ): Promise<HttpResponse> {
+  ): Promise<HttpResponseReturnType> {
     return this.execute(path, "DELETE", parameters);
   }
 
   public async put(
     path: string,
     parameters: Record<string, any>
-  ): Promise<HttpResponse> {
+  ): Promise<HttpResponseReturnType> {
     return this.execute(path, "PUT", parameters);
   }
 
@@ -57,7 +57,7 @@ export class HttpClient {
     path: string,
     method: HttpMethod,
     parameters: Record<string, any>
-  ): Promise<HttpResponse> {
+  ): Promise<HttpResponseReturnType> {
     const url = `${this.options.base}${path}`;
     //set up HTTP headers to includes a digital signature
     const headers = this.options.security?.sharedSecret
@@ -68,7 +68,6 @@ export class HttpClient {
           this.options.security.sharedSecret
         )
       : {};
-
     return this.fetcher.fetch(url, method, headers, parameters);
   }
 }
