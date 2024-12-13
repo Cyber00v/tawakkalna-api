@@ -127,7 +127,7 @@ class TawakkalnaApi
 
     if (typeof media == "string")
       return this.addRequestToQueue(
-        `/gallery/raw_data?file_name=${media}`,
+        `/gallery/raw_data?file_name=${encodeURI(media)}`,
         "GET",
         {},
         true
@@ -135,7 +135,7 @@ class TawakkalnaApi
 
     for (const m of media)
       this.addRequestToQueue(
-        `/gallery/raw_data?file_name=${m.data}`,
+        `/gallery/raw_data?file_name=${encodeURI(m.data)}`,
         "GET",
         {},
         true
