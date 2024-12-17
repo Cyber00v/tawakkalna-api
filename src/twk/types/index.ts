@@ -137,7 +137,7 @@ export type User = Partial<{
   occupation: string;
   nationalAddresses: Address[];
   sponsors: Sponsor[];
-  members: Member[];
+  familyMembers: Member[];
   violations: Violation[];
   vehicles: Vehicle[];
 }>;
@@ -213,7 +213,7 @@ export const TawakkalnaEntityEnum = arrayEnum([
   "occupation",
   "nationalAddresses",
   "sponsors",
-  "members",
+  "familyMembers",
   "violations",
   "vehicles",
   "files",
