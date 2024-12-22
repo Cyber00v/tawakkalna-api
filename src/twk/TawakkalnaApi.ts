@@ -54,7 +54,7 @@ class TawakkalnaApi
     this.addRequestToQueue("/user_data/gender");
 
   public requestUserType = (): UserApi =>
-    this.addRequestToQueue("/user_data/gender");
+    this.addRequestToQueue("/user_data/user_type");
 
   public requestUserLocation = (): UserApi =>
     this.addRequestToQueue("/user_data/user_location");
@@ -66,7 +66,7 @@ class TawakkalnaApi
     this.addRequestToQueue("/user_data/nationality_iso");
 
   public requestUserFullName = (): UserApi =>
-    this.addRequestToQueue("/user_data/full_name");
+    this.addRequestToQueue("/v2/user_data/full_name");
 
   public requestUserMaritalStatus = (): UserApi =>
     this.addRequestToQueue("/user_data/marital_status");
@@ -96,10 +96,10 @@ class TawakkalnaApi
     this.addRequestToQueue("/user_data/birth_date");
 
   public requestUserFamilyMembers = (): UserApi =>
-    this.addRequestToQueue("/user_data/birth_date");
+    this.addRequestToQueue("/user_data/family_members");
 
   public requestUserSponsors = (): UserApi =>
-    this.addRequestToQueue("/user_data/birth_date");
+    this.addRequestToQueue("/v2/user_data/sponsors");
 
   public requestGallerySingle = (): GalleryApi =>
     this.addRequestToQueue("/gallery/image/single");

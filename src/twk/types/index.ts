@@ -124,6 +124,8 @@ export type User = Partial<{
   token: string;
   userId: number;
   fullName: string;
+  fullNameEn: string;
+  fullNameAr: string;
   userPhoto: UserPhoto;
   userType: UserType;
   birthDate: Date | string;
@@ -140,6 +142,9 @@ export type User = Partial<{
   familyMembers: Member[];
   violations: Violation[];
   vehicles: Vehicle[];
+
+  //extra field for backend
+  loginId: string;
 }>;
 
 export type Gallery = {
@@ -200,6 +205,8 @@ export const TawakkalnaEntityEnum = arrayEnum([
   "token",
   "userId",
   "fullName",
+  "fullNameEn",
+  "fullNameAr",
   "userPhoto",
   "userType",
   "birthDate",
