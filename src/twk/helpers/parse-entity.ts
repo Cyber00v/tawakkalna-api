@@ -30,7 +30,6 @@ export const parseEntity = <
   entity: T,
   response: R
 ): TawakkalnaEntity | undefined => {
-  alert(JSON.stringify(response));
   if (isFileResponse(response)) {
     if (!entity.files) entity.files = [];
     entity.files.push({ base64: response.content as string });
