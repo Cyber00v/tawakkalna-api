@@ -129,7 +129,7 @@ export type User = Partial<{
   birthDate: Date | string;
   mobileNumber: string;
   gender: Gender;
-  nationality: string;
+  nationalityName: string;
   nationalityIso: string;
   maritalStatus: MaritalStatus;
   bloodType: BloodType;
@@ -205,7 +205,7 @@ export const TawakkalnaEntityEnum = arrayEnum([
   "birthDate",
   "mobileNumber",
   "gender",
-  "nationality",
+  "nationalityName",
   "nationalityIso",
   "maritalStatus",
   "bloodType",
