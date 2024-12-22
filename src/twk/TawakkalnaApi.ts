@@ -51,7 +51,7 @@ class TawakkalnaApi
     this.addRequestToQueue("/capabilities");
 
   public requestUserGender = (): UserApi =>
-    this.addRequestToQueue("/user_data/user_type");
+    this.addRequestToQueue("/user_data/gender");
 
   public requestUserType = (): UserApi =>
     this.addRequestToQueue("/user_data/gender");
