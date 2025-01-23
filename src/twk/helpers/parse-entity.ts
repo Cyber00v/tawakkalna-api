@@ -70,6 +70,15 @@ export const parseEntity = <
       };
 
       entity.documents.push(media);
+    }
+    //for camera photo
+    else if (hasProperty(obj, "type") && obj["type"] == "image") {
+      if (!entity.images) entity.images = [];
+      const media: Media = {
+        ...obj,
+      };
+
+      entity.images.push(media);
     } else {
       for (const [key, value] of objectEntries(obj)) {
         if (isKeyof(key, TawakkalnaEntityEnum)) entity[key] = value;

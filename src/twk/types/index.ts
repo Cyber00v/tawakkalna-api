@@ -5,6 +5,11 @@ export enum Gender {
   "female",
 }
 
+export enum GenderAr {
+  "ذكر" = 1,
+  "انثى",
+}
+
 export enum MaritalStatus {
   "single" = "single",
   "married" = "married",
@@ -33,6 +38,13 @@ export enum CardActionType {
   "Add" = 1,
   "Update",
   "Remove",
+}
+
+export enum UrlType {
+  "http" = 1,
+  "tel",
+  "mailTo",
+  "deepLink",
 }
 
 export type ViolationStatus = "UNPAID" | "PAID";
@@ -81,6 +93,8 @@ export type Member = {
   nameAr: string;
   nameEn: string;
   gender: Gender;
+  idExpiryDateHijri: string;
+  idExpiryDateGregorian: string | Date;
   details: MemberDetails;
 };
 
@@ -120,13 +134,37 @@ export type Vehicle = {
   manufacturer: string;
 };
 
+export type UserPassport = {
+  nameAr: string;
+  nameEn: string;
+  nationalId: number;
+  birthDate: string | Date;
+  expiryDate: string | Date;
+  genderAr: keyof typeof GenderAr;
+  genderCode: Gender;
+  genderEn: keyof typeof Gender;
+  issueCountryAr: string;
+  issueCountryCode: number;
+  issueCountryEn: string;
+  issueDate: string | Date;
+  nationalityAr: string;
+  nationalityCode: number;
+  nationalityEn: string;
+  passportNumber: string;
+  passportTypeAr: string;
+  passportTypeCode: number;
+  passportTypeEn: string;
+};
+
+export type FamilyMembersPassports = UserPassport;
+
 export type User = Partial<{
   token: string;
   userId: number;
   fullName: string;
   fullNameEn: string;
   fullNameAr: string;
-  userPhoto: UserPhoto;
+  userPhoto: UserPhoto; //unused variable
   userType: UserType;
   birthDate: Date | string;
   mobileNumber: string;
@@ -142,6 +180,20 @@ export type User = Partial<{
   familyMembers: Member[];
   violations: Violation[];
   vehicles: Vehicle[];
+  //extra fileds which added in version 1.8
+  idExpiryDateHijri: string;
+  idExpiryDateGregorian: string | Date;
+  idType: number;
+  idTypeDescriptionAr: string;
+  idTypeDescriptionEn: string;
+  userPassports: UserPassport[];
+  familyMembersPassports: FamilyMembersPassports[];
+  email: string;
+  nationalityNameAr: string;
+  nationalityNameEn: string;
+  nationalityCode: number;
+  documentType: number;
+  documentNumber: string;
 
   //extra field for backend
   loginId: string;
@@ -231,6 +283,20 @@ export const TawakkalnaEntityEnum = arrayEnum([
   "images",
   "videos",
   "documents",
+
+  "idExpiryDateHijri",
+  "idExpiryDateGregorian",
+  "idType",
+  "idTypeDescriptionAr",
+  "idTypeDescriptionEn",
+  "userPassports",
+  "familyMembersPassports",
+  "email",
+  "nationalityCode",
+  "nationalityNameAr",
+  "nationalityNameEn",
+  "documentType",
+  "documentNumber",
 ]);
 
 export type TawakkalnaEntity = extendType<

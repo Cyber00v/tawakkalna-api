@@ -3,6 +3,7 @@ import {
   HttpResponseReturnType,
   SuccessResponse,
   TawakkalnaEntity,
+  UrlType,
 } from "./types";
 import { Media, Gallery, User, RawData, CardActionType, Card } from "./types";
 
@@ -12,6 +13,7 @@ import { HttpClient } from "./http-client";
 
 import base64Encoder from "./utils/base64-encoder";
 import resolve from "./helpers/resolve-array-response";
+import isSuccefulResponse from "./guard/is-succeful-response";
 
 class TawakkalnaApi
   implements GalleryApi, UserApi, ActionApi, FileApi, PermissionApi
@@ -31,6 +33,9 @@ class TawakkalnaApi
 
   public requestGenerateToken = (): UserApi =>
     this.addRequestToQueue("/authenticate/generatetoken");
+
+  public requestGenerateTokenV2 = (): UserApi =>
+    this.addRequestToQueue("/v2/authenticate/generatetoken");
 
   public requestUserId = (): UserApi =>
     this.addRequestToQueue("/user_data/user_id");
@@ -101,6 +106,22 @@ class TawakkalnaApi
   public requestUserSponsors = (): UserApi =>
     this.addRequestToQueue("/v2/user_data/sponsors");
 
+  //version 1.8
+  public requestUserPassports = (): UserApi =>
+    this.addRequestToQueue("/user_data/passports");
+
+  public requestUserIdExpiryDate = (): UserApi =>
+    this.addRequestToQueue("/user_data/id_expiry_date");
+
+  public requestUserEmail = (): UserApi =>
+    this.addRequestToQueue("/user_data/email");
+
+  public requestUserIqamaType = (): UserApi =>
+    this.addRequestToQueue("/user_data/iqama_type");
+
+  public requestUserDocumentNumber = (): UserApi =>
+    this.addRequestToQueue("/user_data/user_document_number");
+
   public requestGallerySingle = (): GalleryApi =>
     this.addRequestToQueue("/gallery/image/single");
 
@@ -154,13 +175,39 @@ class TawakkalnaApi
 
     return this.httpClient
       .execute("/open_screen", "POST", parameters)
-      .then((res) => Promise.resolve("data" in res ? true : false))
+      .then((res) => Promise.resolve(isSuccefulResponse(res)))
       .catch(() => Promise.resolve(false));
+  };
+
+  public scanCode = async (): Promise<string> => {
+    return this.httpClient
+      .execute("/scan_code", "GET", {})
+      .then(async (response) => {
+        const res = await this.handleResponse(response);
+
+        return Promise.resolve(
+          "data" in res ? JSON.parse(res.data as string).value || "" : ""
+        );
+      })
+      .catch(() => Promise.reject(""));
+  };
+
+  public openUrl = async (url: string, type: UrlType): Promise<boolean> => {
+    if (url.trim().length == 0) return false;
+    return this.httpClient
+      .execute("/actions/open_url", "POST", {
+        url: url,
+        url_type: Number(type),
+      })
+      .then(async (res) => {
+        return Promise.resolve(isSuccefulResponse(res));
+      })
+      .catch(() => Promise.reject(false));
   };
 
   public screenShare = async (): Promise<boolean> => {
     return this.httpClient
-      .execute("/share/screenshot", "POST", {})
+      .execute("/share/screenshot", "GET", {})
       .then((res) => Promise.resolve("data" in res ? true : false))
       .catch(() => Promise.resolve(false));
   };
@@ -171,11 +218,13 @@ class TawakkalnaApi
   ): Promise<string> => {
     return this.httpClient
       .execute("/cards", "POST", { payload: card, actionType: type })
-      .then((res) =>
-        Promise.resolve(
-          "data" in res ? JSON.parse(res.data as string).twkId : "-1"
-        )
-      )
+      .then(async (response) => {
+        const res = await this.handleResponse(response);
+
+        return Promise.resolve(
+          "data" in res ? JSON.parse(res.data as string).twkId || "-1" : "-1"
+        );
+      })
       .catch(() => Promise.resolve("-1"));
   };
 
@@ -216,28 +265,6 @@ class TawakkalnaApi
     }
   }
 
-  // public async sendAll(): Promise<TawakkalnaEntity> {
-  //   const requests = Array.from(this.pendingRequests.values());
-  //   const results = [];
-
-  //   for (const action of requests) {
-  //     try {
-  //       const result = await this.invokeExecution(
-  //         action.callback,
-  //         action.isDownloadableFile
-  //       );
-  //       results.push(result);
-  //     } catch (error: any) {
-  //       throw new Error("Error processing requests: " + error.message);
-  //     }
-  //   }
-
-  //   this.pendingRequests.clear();
-  //   const c: TawakkalnaEntity = {};
-
-  //   return resolve(c, results);
-  // }
-
   private addRequestToQueue(
     path: string,
     method: HttpMethod = "GET",
@@ -270,6 +297,7 @@ class TawakkalnaApi
       );
     }
   }
+
   private async handleResponse(
     response: HttpResponseReturnType,
     isDownloadableFile: boolean = false
@@ -292,12 +320,17 @@ class TawakkalnaApi
   }
 
   private async permissionBaseRequest(url: string): Promise<boolean> {
-    return this.httpClient.execute(url, "GET", {}).then(async (response) => {
-      const res = await this.handleResponse(response);
-      return Promise.resolve(
-        "data" in res ? JSON.parse(res.data as string).granted || false : false
-      ).catch(() => Promise.resolve(false));
-    });
+    return this.httpClient
+      .execute(url, "GET", {})
+      .then(async (response) => {
+        const res = await this.handleResponse(response);
+        return Promise.resolve(
+          "data" in res
+            ? JSON.parse(res.data as string).granted || false
+            : false
+        );
+      })
+      .catch(() => Promise.resolve(false));
   }
 }
 export default TawakkalnaApi;

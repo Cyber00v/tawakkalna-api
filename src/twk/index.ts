@@ -14,7 +14,14 @@ import type {
   ViolationStatus,
   MediaType,
 } from "./types";
-import { BloodType, Gender, MaritalStatus, UserType } from "./types";
+import {
+  BloodType,
+  Gender,
+  MaritalStatus,
+  UserType,
+  CardActionType,
+  UrlType,
+} from "./types";
 import TawakkalnaApi from "./TawakkalnaApi";
 import xhr from "./xhr";
 
@@ -46,6 +53,8 @@ export {
   ViolationStatus,
   MaritalStatus,
   UserType,
+  CardActionType,
+  UrlType,
   http,
   xhr,
 };

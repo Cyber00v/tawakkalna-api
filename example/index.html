@@ -1,0 +1,324 @@
+<html>
+  <head>
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, user-scalable=no"
+    />
+    <link rel="stylesheet" href="pico.css" />
+    <link rel="stylesheet" href="miniapps.css" />
+
+    <script type="module">
+      import twk from "./twk.mjs";
+
+      function output(output) {
+        document.getElementById("output").innerHTML = output;
+
+        const outputModal = document.getElementById("output-modal");
+
+        openModal(outputModal);
+      }
+
+      async function requestUserProfile() {
+        const user = await twk
+          .requestUserMobileNumber()
+          .requestUserId()
+          .requestUserFullName()
+          .requestUserBloodType()
+          .requestUserEmail()
+          .requestUserPassports()
+          .requestUserIdExpiryDate()
+          .requestUserIqamaType()
+          .requestUserDocumentNumber()
+          .requestUserGender()
+          .sendAll()
+          .catch((error) =>
+            output("<kbd class='danger'>error</kbd>:<br/>" + error)
+          );
+
+        if (user)
+          output(
+            "<kbd>requestUserProfile result</kbd>:<br/>" + JSON.stringify(user)
+          );
+      }
+
+      function getUserPhoto() {
+        twk
+          .requestUserProfilePhoto()
+          .sendAll()
+          .then(({ images }) => {
+            output(
+              "<kbd>getUserPhoto result </kbd>: <br/>" + JSON.stringify(images)
+            );
+            twk
+              .requestRawData(images)
+              .sendAll()
+              .then(({ files }) => {
+                output("data:image/png;base64," + files[0].base64);
+              });
+          })
+          .catch((error) => {
+            output(
+              "<b style='color:red;'>fail:</kbd> " +
+                JSON.stringify(error, null, 2)
+            );
+          });
+      }
+
+      async function testOpenUrl(url, urlType) {
+        const isUrlOpend = await twk.openUrl(url, urlType);
+
+        if (!isUrlOpend) output("sorry something happened");
+      }
+
+      function requestGallerySingleImage() {
+        twk
+          .requestGallerySingle()
+          .sendAll()
+          .then((gallery) =>
+            output("requestGallerySingleImage:<br/>" + JSON.stringify(gallery))
+          )
+          .catch((e) => {
+            output("error in requestGallerySingleImage <br/>" + e);
+          });
+      }
+
+      function requestGalleryMultiImages() {
+        twk
+          .requestGalleryMulti()
+          .sendAll()
+          .then((gallery) =>
+            output("requestGalleryMultiImages <br/>" + JSON.stringify(gallery))
+          )
+          .catch((e) => {
+            output("Error in requestGalleryMultiImages <br/>" + e);
+          });
+      }
+
+      function requestCameraPhoto() {
+        twk
+          .requestCameraPhoto()
+          .sendAll()
+          .then((gallery) =>
+            output("requestCameraPhoto<br/>" + JSON.stringify(gallery))
+          )
+          .catch((e) => {
+            output("Error requestCameraPhoto <br/>" + e);
+          });
+      }
+
+      function requestGallerySingleVideo() {
+        twk
+          .requestGallerySingleVideo()
+          .sendAll()
+          .then((gallery) =>
+            output("requestGallerySingleVideo <br/>" + JSON.stringify(gallery))
+          )
+          .catch((e) => {
+            output("error requestGallerySingleVideo <br/>" + e);
+          });
+      }
+
+      function requestGalleryMultiVideos() {
+        twk
+          .requestGalleryMultiVideo()
+          .sendAll()
+          .then((gallery) =>
+            output("requestGalleryMultiVideos <br/>" + JSON.stringify(gallery))
+          )
+          .catch((e) => {
+            output("Error in requestGalleryMultiVideos <br/>" + e);
+          });
+      }
+
+      async function generateToken() {
+        const { token } = await twk
+          .requestGenerateTokenV2()
+          .sendAll()
+          .catch((error) => {
+            output("Error while fetch token <br/>" + error);
+          });
+
+        if (token) output("<kbb>generate token:</kbb> <br/>" + token);
+      }
+
+      async function scanCode() {
+        const value = await twk.scanCode();
+        if (value) output("<kbb>Scan code value:</kbb>" + value);
+        else output("<kbb class='danger'>No Result</kbb>");
+      }
+
+      async function screenShare() {
+        const isCaptured = await twk.screenShare();
+        if (isCaptured) output("<kbb>Screen has been captured</kbb>");
+        else output("<kbb class='danger'>oops</kbb>");
+      }
+
+      async function requestDeviceInfo() {
+        const { deviceModel, osVersion, appearance, appLanguage } = await twk
+          .requestDeviceInfo()
+          .sendAll()
+          .catch((error) =>
+            output(
+              "<kbb class='danger'>Error while fetch device information</kbb>"
+            )
+          );
+        const formatOutout = {
+          "application language": appLanguage,
+          "OS version": osVersion,
+          isLight: appearance === 1,
+          isDark: appearance === 2,
+          model: deviceModel,
+        };
+
+        output(JSON.stringify(formatOutout));
+      }
+
+      async function askUserLocationPermission() {
+        const hasPermission = await twk.askUserLocationPermission();
+        if (hasPermission) output("<kbb>has Permission</kbb>");
+        else output("<kbb class='danger'>not allowed</kbb>");
+      }
+
+      async function askCameraPermission() {
+        const hasPermission = await twk.askCameraPermission();
+        if (hasPermission) output("<kbb>has Permission</kbb>");
+        else output("<kbb class='danger'>not allowed</kbb>");
+      }
+
+      async function authenticateBiometric() {
+        const hasPermission = await twk.authenticateBiometric();
+        if (hasPermission) output("<kbb>has Permission</kbb>");
+        else output("<kbb class='danger'>not allowed</kbb>");
+      }
+
+      const eventHandlers = {
+        get_user_profile: requestUserProfile,
+        get_user_photo: getUserPhoto,
+        open_gallery_single: requestGallerySingleImage,
+        open_gallery_photo: requestCameraPhoto,
+        open_gallery_multi_images: requestGalleryMultiImages,
+        open_gallery_video: requestGallerySingleVideo,
+        open_gallery_multi_videos: requestGalleryMultiVideos,
+        scan_code: scanCode,
+        generate_token: generateToken,
+        screen_share: screenShare,
+        device_info: requestDeviceInfo,
+        askUserLocationPermission: askUserLocationPermission,
+        askCameraPermission: askCameraPermission,
+        authenticateBiometric: authenticateBiometric,
+      };
+
+      for (const target in eventHandlers)
+        document
+          .getElementById(target)
+          .addEventListener("click", eventHandlers[target]);
+      //end of script
+    </script>
+  </head>
+  <body>
+    <div style="height: 100vh">
+      <div
+        style="
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: start;
+        "
+      >
+        <hgroup>
+          <h2>User API</h2>
+          <div role="group">
+            <button class="contrast" id="get_user_profile">
+              Get User Profile
+            </button>
+            <button class="contrast" id="get_user_photo">Get user photo</button>
+          </div>
+        </hgroup>
+        <hgroup>
+          <h2>Gallery API (Images)</h2>
+          <div role="group">
+            <button class="contrast" id="open_gallery_single">
+              Single Image
+            </button>
+            <button class="contrast" id="open_gallery_multi_images">
+              Multi Images
+            </button>
+          </div>
+        </hgroup>
+        <hgroup>
+          <h2>Gallery API (Videos)</h2>
+          <div role="group">
+            <button class="contrast" id="open_gallery_video">
+              Single Video
+            </button>
+            <button class="contrast" id="open_gallery_multi_videos">
+              Multi Video
+            </button>
+          </div>
+        </hgroup>
+
+        <hgroup>
+          <h2>Camera API</h2>
+          <div role="group">
+            <button class="contrast" id="open_gallery_photo">
+              Take a photo
+            </button>
+            <button class="contrast" id="scan_code">Scan Code</button>
+          </div>
+        </hgroup>
+        <hgroup>
+          <h2>Authenticate API</h2>
+          <div role="group">
+            <button class="contrast" id="generate_token">Generate Token</button>
+          </div>
+        </hgroup>
+
+        <hgroup>
+          <h2>Share API</h2>
+          <div role="group">
+            <button class="contrast" id="screen_share">Screen Share</button>
+          </div>
+        </hgroup>
+
+        <hgroup>
+          <h2>Device Capabilities API</h2>
+          <div role="group">
+            <button class="contrast" id="device_info">
+              Get Device Capabilities
+            </button>
+          </div>
+        </hgroup>
+
+        <hgroup>
+          <h2>Permissions API</h2>
+          <div role="group">
+            <button class="contrast" id="askUserLocationPermission">
+              Location
+            </button>
+            <button class="contrast" id="askCameraPermission">Camera</button>
+            <button class="contrast" id="authenticateBiometric">
+              Biometric
+            </button>
+          </div>
+        </hgroup>
+      </div>
+    </div>
+
+    <dialog id="output-modal">
+      <article>
+        <header>
+          <button
+            aria-label="Close"
+            rel="prev"
+            data-target="output-modal"
+            onclick="toggleModal(event)"
+          ></button>
+          <p><strong>Output</strong></p>
+        </header>
+        <div id="output"></div>
+      </article>
+    </dialog>
+
+    <script src="./modal.js"></script>
+  </body>
+</html>

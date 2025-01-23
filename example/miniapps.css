@@ -1,0 +1,37 @@
+@font-face {
+  font-family: "sfpro";
+  src: url("fonts/SFPRODISPLAYMEDIUM.OTF") format("opentype");
+}
+@font-face {
+  font-family: "sfpro";
+  font-weight: bold;
+  src: url("fonts/SFPRODISPLAYBOLD.OTF") format("opentype");
+}
+
+:root {
+  --pico-form-element-spacing-vertical: 0.25rem;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+[role="group"] [role="button"],
+[role="group"] [type="button"],
+[role="group"] [type="submit"],
+[role="group"] button,
+[role="search"] [role="button"],
+[role="search"] [type="button"],
+[role="search"] [type="submit"],
+[role="search"] button {
+  --pico-form-element-spacing-horizontal: 1.1rem;
+}
+
+.danger {
+  background-color: rgba(180, 77, 77, 0.84);
+}
